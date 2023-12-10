@@ -9,6 +9,10 @@
     <meta charset="ISO-8859-1">
     <title>Edit Item</title>
 
+    <!-- Include Syncfusion Essential JS 2 CSS and script files -->
+    <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/material.css" />
+    <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js"></script>
+
     <link rel="stylesheet"
         	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <link rel="stylesheet"
@@ -27,75 +31,55 @@
 
         <h1 class="p-3"> Edit Item </h1>
 
-        <form:form action="/editSaveToDoItem" method="post" modelAttribute="todo">
-			<form:input path="id" type="hidden"/>
-            <div class="row">
-            	<div class="form-group col-md-12">
-            		<label class="col-md-3" for="title">Title</label>
-            		<div class="col-md-6">
-            		    <form:input type="text" path="title" id="title"
-            		        class="form-control input-sm" required="required" />
-            		</div>
-            	</div>
-            </div>
+        <!-- Syncfusion Grid initialization -->
+        <div id="Grid"></div>
 
-            <div class="row">
-            	<div class="form-group col-md-12">
-            		<label class="col-md-3" for="date">Date</label>
-            		<div class="col-md-6">
-            			<form:input type="date" path="date" id="date"
-            				class="form-control input-sm" required="required" />
-            		</div>
-            	</div>
-            </div>
-            
-            <div class="row">
-            	<div class="form-group col-md-12">
-            		<label class="col-md-3" for="status">Status</label>
-            		<div class="col-md-6">
-            			<form:input type="text" path="status" id="status"
-            				class="form-control input-sm" value="Incomplete" />
-            		</div>
-            	</div>
-            </div>
+        <script th:inline="javascript">
+            window.onload = function () {
+                // Define Syncfusion Grid for EditToDoItem.jsp
+                var grid = new ej.grids.Grid({
+                    dataSource: [],
+                    columns: [
+                        { field: 'title', headerText: 'Title' },
+                        { field: 'date', headerText: 'Date' },
+                        { field: 'status', headerText: 'Status', defaultValue: 'Incomplete' },
+                        // Add other columns as needed
+                        // For example, hidden input for 'id'
+                        { field: 'id', isPrimaryKey: true, visible: false }
+                    ],
+                    editSettings: { allowEditing: true, allowAdding: true, allowDeleting: true },
+                    toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel'],
+                });
 
-            <div class="row p-2">
-            	<div class="col-md-2">
-            		<button type="submit" value="Register" class="btn btn-success">Save</button>
-            	</div>
-            </div>
+                // Render the Syncfusion Grid
+                grid.appendTo('#Grid');
 
-        </form:form>
+                var msg = "${message}";
+
+                if (msg == "Edit Failure") {
+                    Command: toastr["error"]("Something went wrong with the edit.");
+                }
+
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+            }
+        </script>
 
     </div>
-
-    <script th:inline="javascript">
-                window.onload = function() {
-
-                    var msg = "${message}";
-                    console.log(msg);
-                    if (msg == "Edit Failure") {
-        				Command: toastr["error"]("Something went wrong with the edit.")
-        			}
-
-        			toastr.options = {
-                          "closeButton": true,
-                          "debug": false,
-                          "newestOnTop": false,
-                          "progressBar": true,
-                          "positionClass": "toast-top-right",
-                          "preventDuplicates": false,
-                          "showDuration": "300",
-                          "hideDuration": "1000",
-                          "timeOut": "5000",
-                          "extendedTimeOut": "1000",
-                          "showEasing": "swing",
-                          "hideEasing": "linear",
-                          "showMethod": "fadeIn",
-                          "hideMethod": "fadeOut"
-                        }
-        	    }
-            </script>
 
 </body>
 
