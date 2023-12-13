@@ -1,89 +1,120 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+  <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
-<html>
+
 <head>
-    <title>ToDo Item List</title>
-    <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/material.css" />
-    <!-- Add your other stylesheets here -->
+    <meta charset="ISO-8859-1">
+    <title>View ToDo Item List</title>
+
+    <link rel="stylesheet"
+        	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+            
+        <script
+        	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <style>
-        /* Add your styles here */
+        a{
+            color: white;
+        }
+        a:hover {
+            color: white;
+            text-decoration: none;
+        }
     </style>
+
 </head>
 <body>
 
-    <h1>ToDo Item List</h1>
+    <div class="container">
 
-    <div id="grid"></div>
+        <h1 class="p-3"> ToDo Item List</h1>
 
-    <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
+        <form:form>
 
-        var todoItems = [];
+            <table class="table table-bordered">
+            	<tr>
+            		<th>Id</th>
+            		<th>Title</th>
+            		<th>Date</th>
+            		<th>Status</th>
+            		<th>Mark Completed</th>
+            		<th>Edit</th>
+            		<th>Delete</th>
+            	</tr>
 
-        // Initialize the DataGrid
-        ej.grids.Grid.Inject(ej.grids.Edit, ej.grids.Toolbar);
-        var grid = new ej.grids.Grid({
-            dataSource: todoItems,
-            editSettings: { allowEditing: true, allowDeleting: true, allowAdding: true, mode: 'Dialog', height: 400 },
-            toolbar: ['Add', 'Edit', 'Delete', 'Search'],
-            columns: [
-                { field: 'id', headerText: 'Id', isPrimaryKey: true },
-                { field: 'title', headerText: 'Title' },
-                { field: 'date', headerText: 'Date' },
-                { field: 'status', headerText: 'Status' },
-                // Add other columns as needed
-            ],
+            	<c:forEach var="todo" items="${list}">
+                    <tr>
+                		<td>${todo.id}</td>
+                		<td>${todo.title}</td>
+                		<td>${todo.date}</td>
+                		<td>${todo.status}</td>
+                		<td><button type="button" class="btn btn-success">
+                		    <a href="/updateToDoStatus/${todo.id}">Mark Complete</a>
+                		</button></td>
+                		<td><button type="button" class="btn btn-primary">
+                		    <a href="/editToDoItem/${todo.id}">Edit</a>
+                		</button></td>
+                		<td><button type="button" class="btn btn-danger">
+                			<a href="/deleteToDoItem/${todo.id}">Delete</a>
+                		</button></td>
+                	</tr>
 
-            allowPaging: true,
-            gridLines: 'Both',
-            pageSettings: { pageSize: 10 },
-            allowSorting: true,
+            	</c:forEach>
 
-            actionComplete: function (args) {
-                if (args.requestType === 'save') {
-                    // The 'save' requestType indicates that an add, edit, or delete operation was performed
-                    if (args.action === 'add') {
-                        // If it was an 'add' action, send the new record to the server to add to the database
-                        addTodoItem(args.data);
-                    } else if (args.action === 'edit') {
-                        // If it was an 'edit' action, send the updated record to the server to update the database
-                        updateTodoItem(args.data);
-                    }
-                }
-            }
+            </table>
 
-        });
+        </form:form>
 
-        // Function to fetch todo items data
-        function fetchTodoItems() {
-            // Make an AJAX request to the server to fetch data
-            fetch('/viewToDoList')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Data received:', data);
+        <button type="button" class="btn btn-primary btn-block">
+        	<a href="/addToDoItem">Add New ToDo Item</a>
+        </button>
 
-                    // Update the DataGrid with the retrieved data
-                    grid.dataSource = data;
-                    grid.refresh();
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
-        }
+    </div>
 
+    <script th:inline="javascript">
+                window.onload = function() {
 
-    
-        // Render the DataGrid
-        grid.appendTo('#grid');
+                    var msg = "${message}";
+                    
+                    if (msg == "Save Success") {
+        				Command: toastr["success"]("Item added successfully!!")
+        			} else if (msg == "Delete Success") {
+        				Command: toastr["success"]("Item deleted successfully!!")
+        			} else if (msg == "Delete Failure") {
+        			    Command: toastr["error"]("Some error occurred, couldn't delete item")
+        			} else if (msg == "Edit Success") {
+        				Command: toastr["success"]("Item updated successfully!!")
+        			}
 
-        // Automatically fetch data when the DOM content is loaded
-        fetchTodoItems();
+        			toastr.options = {
+                          "closeButton": true,
+                          "debug": false,
+                          "newestOnTop": false,
+                          "progressBar": true,
+                          "positionClass": "toast-top-right",
+                          "preventDuplicates": false,
+                          "showDuration": "300",
+                          "hideDuration": "1000",
+                          "timeOut": "5000",
+                          "extendedTimeOut": "1000",
+                          "showEasing": "swing",
+                          "hideEasing": "linear",
+                          "showMethod": "fadeIn",
+                          "hideMethod": "fadeOut"
+                        }
+        	    }
+            </script>
 
-    });
-
-    </script>
 </body>
+
 </html>
+
