@@ -60,7 +60,7 @@
         // Function to fetch todo items data
         function fetchTodoItems() {
             // Make an AJAX request to the server to fetch data
-            fetch('/fetchTodoItems')
+            fetch('/viewToDoItem')
                 .then(response => response.json())
                 .then(data => {
                     console.log('Data received:', data);
@@ -74,77 +74,8 @@
                 });
         }
 
-        // Function to add a new todo item
-        function addTodoItem(todoItem) {
-            fetch('/addTodoItem', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(todoItem),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Todo item added successfully:', data);
-                    // Fetch updated data after adding a new todo item
-                    fetchTodoItems();
-                })
-                .catch(error => {
-                    console.error('Error adding todo item:', error);
-                });
-        }
 
-        // Function to update a todo item
-        function updateTodoItem(updatedTodoItem) {
-            fetch('/updateTodoItem/' + updatedTodoItem.id, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedTodoItem),
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('Error updating todo item: ' + response.statusText);
-                    }
-                })
-                .then(data => {
-                    // Process the updated todo item data
-                    console.log('Todo item updated successfully:', data);
-                    fetchTodoItems(); // Refresh the data after a successful update
-                })
-                .catch(error => {
-                    console.error('Error updating todo item:', error.message);
-                });
-        }
-
-        grid.toolbarClick = function (args) {
-            if (args.item.id === 'grid_delete') {
-                // Get the selected records
-                var selectedRecords = grid.getSelectedRecords();
-
-                if (selectedRecords.length > 0) {
-                    // Send a POST request to the server to delete the selected record
-                    fetch('/deleteTodoItem/' + selectedRecords[0].id, {
-                        method: 'POST',
-                    })
-                        .then(response => response.text())
-                        .then(message => {
-                            console.log(message);
-                            // Refresh the grid after a successful deletion
-                            fetchTodoItems();
-                        })
-                        .catch(error => {
-                            console.error('Error deleting todo item:', error);
-                        });
-                } else {
-                    console.warn('No records selected for deletion');
-                }
-            }
-        };
-
+    
         // Render the DataGrid
         grid.appendTo('#grid');
 
