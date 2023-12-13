@@ -60,7 +60,7 @@
         // Function to fetch todo items data
         function fetchTodoItems() {
             // Make an AJAX request to the server to fetch data
-            fetch('/viewToDoItem')
+            fetch('/viewToDoList')
                 .then(response => response.json())
                 .then(data => {
                     console.log('Data received:', data);
